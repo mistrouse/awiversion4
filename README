@@ -1,0 +1,6 @@
+Simple TODO List
+=====================================
+
+This is very simple todo app. Made on Java, Play Framework, H2, eBean, Git.
+The basic model is a Task, so tasks can be created and deleted dynamically. It uses eBean as an ORM to store and retrieve the objects from a database.
+om

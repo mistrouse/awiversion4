@@ -1,0 +1,9 @@
+applications:
+  - host: awislack2
+    name: awislack2
+    buildpack: java_buildpack
+    path: ./target/universal/todolist-1.0-SNAPSHOT.zip
+    instances: 1
+    memory: 512M
+    env:
+      BLUEMIX_INFO_URL: https://api.ng.bluemix.net/v2/info
