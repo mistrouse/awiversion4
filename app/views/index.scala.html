@@ -1,10 +1,16 @@
-@(tasks: List[Task], taskForm: Form[Task])
+@(tasks: List[Task], taskForm: Form[Task], search: String)
 
 @import helper._
 
 @main("List to do") {
 
-
+<h2>
+    Recherche
+</h2>
+<form method="get" action="@routes.Application.tasks()">
+    <input type="text" name="q" placeholder="rechercher une tache" value="@search"/>
+    <input type="submit" value="recherche" />
+</form>
 <h2>Nombre de tâches: @tasks.size()</h2>
 <div class="table-responsive">
     <table class="table table-striped">

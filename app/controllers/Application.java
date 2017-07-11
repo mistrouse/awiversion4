@@ -6,6 +6,8 @@ import play.data.*;
 import models.*;
 import securesocial.core.Identity;
 import securesocial.core.java.SecureSocial;
+import com.avaje.ebean.Expr;
+import java.util.List;
 
 import views.html.*;
 
@@ -20,9 +22,18 @@ public class Application extends Controller {
 
     @SecureSocial.SecuredAction
     public static Result tasks() {
-        return ok(
-                views.html.index.render(Task.all(), taskForm)
-        );
+        String q = Form.form().bindFromRequest().get("q");
+        if(q != null) {
+            List<Task> t = Task.find.where().or(Expr.like("label", q + "%"),Expr.like("name", q + "%")).findList();
+            return ok(
+                    views.html.index.render(t, taskForm, q)
+            );
+        }
+        else {
+            return ok(
+                    views.html.index.render(Task.all(), taskForm, q)
+            );
+        }
     }
 
     @SecureSocial.SecuredAction
@@ -30,7 +41,7 @@ public class Application extends Controller {
         Form<Task> filledForm = taskForm.bindFromRequest();
         if(filledForm.hasErrors()) {
             return badRequest(
-                    views.html.index.render(Task.all(), filledForm)
+                    views.html.index.render(Task.all(), filledForm, "")
             );
         } else {
             Task.create(filledForm.get());
