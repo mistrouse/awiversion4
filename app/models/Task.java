@@ -17,6 +17,8 @@ public class Task extends Model {
 
     public String name;
 
+    public String email;
+
     public static Finder<Long,Task> find = new Finder(
             Long.class, Task.class
     );

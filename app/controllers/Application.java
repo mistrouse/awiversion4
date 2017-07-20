@@ -20,31 +20,48 @@ public class Application extends Controller {
         return redirect(routes.Application.tasks());
     }
 
+    public static List<Task> userTasks(Identity user) {
+        return Task.find.where().eq("email", user.email().get()).findList();
+    }
+
     @SecureSocial.SecuredAction
     public static Result tasks() {
+        Identity user = (Identity) ctx().args.get(SecureSocial.USER_KEY);
         String q = Form.form().bindFromRequest().get("q");
         if(q != null) {
-            List<Task> t = Task.find.where().or(Expr.like("label", q + "%"),Expr.like("name", q + "%")).findList();
+            List<Task> t = Task.find
+              .where()
+              .and(
+                Expr.or(
+                  Expr.like("label", q + "%"),Expr.like("name", q + "%")
+                ),
+                Expr.eq("email", user.email().get())
+              )
+              .findList();
             return ok(
                     views.html.index.render(t, taskForm, q)
             );
         }
         else {
             return ok(
-                    views.html.index.render(Task.all(), taskForm, q)
+                    views.html.index.render(userTasks(user), taskForm, q)
             );
         }
     }
 
     @SecureSocial.SecuredAction
     public static Result newTask() {
+        Identity user = (Identity) ctx().args.get(SecureSocial.USER_KEY);
         Form<Task> filledForm = taskForm.bindFromRequest();
         if(filledForm.hasErrors()) {
             return badRequest(
-                    views.html.index.render(Task.all(), filledForm, "")
+                    views.html.index.render(userTasks(user), filledForm, "")
             );
         } else {
-            Task.create(filledForm.get());
+            Task t = filledForm.get();
+            t.email = user.email().get();
+            Task.create(t);
+
             return redirect(routes.Application.tasks());
         }
     }
